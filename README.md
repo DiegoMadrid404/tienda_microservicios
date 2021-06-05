@@ -4,12 +4,9 @@
 
 ## Informatica 1
 
-## Modelo Tienda de Barrio
+## Microservicios Tienda de Barrio
 
 
 - Luz Amanda Quilindo
 - Diego Madrid
 - Sebastian Vega
-
-
-# tienda_microservicios
