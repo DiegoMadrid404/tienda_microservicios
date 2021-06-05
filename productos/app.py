@@ -1,10 +1,13 @@
 from flask import Flask, url_for, redirect
 from flask.helpers import url_for
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///productos.db'
 app.config['SECRET_KEY'] = "123"
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 db = SQLAlchemy(app)
 
@@ -20,6 +23,7 @@ class producto(db.Model):
         self.producto_valor = datos["valor"]
 
 @app.route("/")
+@cross_origin()
 def principal():
     data = producto.query.all()
     diccionario_productos = {}
@@ -33,6 +37,7 @@ def principal():
     return diccionario_productos
 
 @app.route("/agregar/<nombre>/<int:cantidad>/<int:valor>")
+@cross_origin()
 def agregar(nombre, cantidad, valor):
     datos = {"nombre": nombre,
              "cantidad": cantidad,
@@ -44,6 +49,7 @@ def agregar(nombre, cantidad, valor):
     return redirect(url_for('principal'))
 
 @app.route("/eliminar/<int:id>")
+@cross_origin()
 def eliminar(id):
     p = producto.query.filter_by(id=id).first()
     db.session.delete(p)
@@ -51,6 +57,7 @@ def eliminar(id):
     return redirect(url_for('principal'))
 
 @app.route("/actualizar/<int:id>/<nombre>/<int:cantidad>/<int:valor>")
+@cross_origin()
 def actualizar(id, nombre, cantidad, valor):
     p = producto.query.filter_by(id=id).first()
     p.producto_nombre = nombre
@@ -60,6 +67,7 @@ def actualizar(id, nombre, cantidad, valor):
     return redirect(url_for('principal'))
 
 @app.route("/buscar/<int:id>")
+@cross_origin()
 def buscar(id):
     d = producto.query.filter_by(id=id).first()
     p = {"id": d.id,
@@ -73,4 +81,3 @@ def buscar(id):
 if __name__ == "__main__":
     db.create_all()
     app.run(debug=True)
-
