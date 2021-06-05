@@ -48,11 +48,14 @@ def principal():
     return diccionario_pedidos
 @app.route("/agregar/<int:cantidad>/<int:valor_total>/<fecha>/<estado>")
 @cross_origin()
-def agregar(cantidad, valor_total, fecha,estado):
+def agregar(cantidad, valor_total, fecha,estado,pedido_domiciliario,pedido_cliente,pedido_producto):
     datos = {"cantidad": cantidad,
              "valor_total": valor_total,
              "fecha": fecha,
              "estado": estado,
+             "domiciliario": pedido_domiciliario,
+             "cliente": pedido_cliente,
+             "producto": pedido_producto
             }
     p = pedidos(datos)
     db.session.add(p)
@@ -69,12 +72,19 @@ def eliminar(id):
 
 @app.route("/actualizar/<int:id>/<int:cantidad>/<int:valor_total>/<fecha>/<estado>")
 @cross_origin()
-def actualizar(id, cantidad, valor_total, fecha,estado):
+def actualizar(id, cantidad, valor_total, fecha,estado,pedido_domiciliario,pedido_cliente,pedido_producto):
     p = pedidos.query.filter_by(id=id).first()
     p.pedido_cantidad = cantidad
     p.pedido_valor_total = valor_total
     p.pedido_fecha = fecha,
-    p.pedido_estado = estado
+    p.pedido_estado = estado,
+    p.pedido_domiciliario=pedido_domiciliario,
+    p.pedido_cliente=pedido_cliente,
+    p.pedido_producto=pedido_producto
+
+  
+
+
     db.session.commit()
     return redirect(url_for('principal'))
 
