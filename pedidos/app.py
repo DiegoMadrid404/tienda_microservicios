@@ -16,12 +16,19 @@ class pedidos(db.Model):
     pedido_cantidad = db.Column(db.Integer)
     pedido_valor_total = db.Column(db.Integer)
     pedido_fecha = db.Column(db.String(100))
+    pedido_estado = db.Column(db.String(100))
+    pedido_domiciliario = db.Column(db.Integer)
+    pedido_cliente=db.Column(db.Integer)
+    pedido_producto=db.Column(db.String(100))
 
     def __init__(self, datos):
         self.pedido_cantidad = datos["cantidad"]
         self.pedido_valor_total = datos["valor_total"]
         self.pedido_fecha = datos["fecha"]
-
+        self.pedido_estado = datos["estado"]
+        self.pedido_domiciliario = datos["domiciliario"]
+        self.pedido_cliente=datos["cliente"]
+        self.pedido_producto=datos["producto"]
 @app.route("/")
 @cross_origin()
 def principal():
@@ -31,16 +38,21 @@ def principal():
         p = {"id": d.id,
              "cantidad": d.pedido_cantidad,
              "valor_total": d.pedido_valor_total,
-             "fecha": d.pedido_fecha
+             "fecha": d.pedido_fecha,
+             "estado": d.pedido_estado,
+             "domiciliario": d.pedido_domiciliario,
+             "cliente": d.pedido_cliente,
+             "producto": d.pedido_producto
             }
         diccionario_pedidos[d.id] = p
     return diccionario_pedidos
-@app.route("/agregar/<int:cantidad>/<int:valor_total>/<fecha>")
+@app.route("/agregar/<int:cantidad>/<int:valor_total>/<fecha>/<estado>")
 @cross_origin()
-def agregar(cantidad, valor_total, fecha):
+def agregar(cantidad, valor_total, fecha,estado):
     datos = {"cantidad": cantidad,
              "valor_total": valor_total,
-             "fecha": fecha
+             "fecha": fecha,
+             "estado": estado,
             }
     p = pedidos(datos)
     db.session.add(p)
@@ -55,13 +67,14 @@ def eliminar(id):
     db.session.commit()
     return redirect(url_for('principal'))
 
-@app.route("/actualizar/<int:id>/<int:cantidad>/<int:valor_total>/<fecha>")
+@app.route("/actualizar/<int:id>/<int:cantidad>/<int:valor_total>/<fecha>/<estado>")
 @cross_origin()
-def actualizar(id, cantidad, valor_total, fecha):
+def actualizar(id, cantidad, valor_total, fecha,estado):
     p = pedidos.query.filter_by(id=id).first()
     p.pedido_cantidad = cantidad
     p.pedido_valor_total = valor_total
-    p.pedido_fecha = fecha
+    p.pedido_fecha = fecha,
+    p.pedido_estado = estado
     db.session.commit()
     return redirect(url_for('principal'))
 
@@ -72,7 +85,8 @@ def buscar(id):
     p = {"id": d.id,
          "cantidad": d.pedido_cantidad,
          "valor_total": d.pedido_valor_total,
-         "fecha": d.pedido_fecha
+         "fecha": d.pedido_fecha,
+           "estado": d.estado,
         }
     return p
 
