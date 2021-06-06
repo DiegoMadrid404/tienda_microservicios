@@ -11,15 +11,16 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 db = SQLAlchemy(app)
 
+
 class pedidos(db.Model):
-    id  = db.Column("pedido_id", db.Integer, primary_key=True)
+    id = db.Column("pedido_id", db.Integer, primary_key=True)
     pedido_cantidad = db.Column(db.Integer)
     pedido_valor_total = db.Column(db.Integer)
     pedido_fecha = db.Column(db.String(100))
     pedido_estado = db.Column(db.String(100))
     pedido_domiciliario = db.Column(db.Integer)
-    pedido_cliente=db.Column(db.Integer)
-    pedido_producto=db.Column(db.String(100))
+    pedido_cliente = db.Column(db.Integer)
+    pedido_producto = db.Column(db.Integer)
 
     def __init__(self, datos):
         self.pedido_cantidad = datos["cantidad"]
@@ -27,8 +28,10 @@ class pedidos(db.Model):
         self.pedido_fecha = datos["fecha"]
         self.pedido_estado = datos["estado"]
         self.pedido_domiciliario = datos["domiciliario"]
-        self.pedido_cliente=datos["cliente"]
-        self.pedido_producto=datos["producto"]
+        self.pedido_cliente = datos["cliente"]
+        self.pedido_producto = datos["producto"]
+
+
 @app.route("/")
 @cross_origin()
 def principal():
@@ -43,24 +46,26 @@ def principal():
              "domiciliario": d.pedido_domiciliario,
              "cliente": d.pedido_cliente,
              "producto": d.pedido_producto
-            }
+             }
         diccionario_pedidos[d.id] = p
     return diccionario_pedidos
-@app.route("/agregar/<int:cantidad>/<int:valor_total>/<fecha>/<estado>")
+
+@app.route("/agregar/<int:cantidad>/<int:valor_total>/<fecha>/<estado>/<int:domiciliario>/<int:cliente>/<int:producto>")
 @cross_origin()
-def agregar(cantidad, valor_total, fecha,estado,pedido_domiciliario,pedido_cliente,pedido_producto):
+def agregar(cantidad, valor_total, fecha, estado, domiciliario, cliente, producto):
     datos = {"cantidad": cantidad,
              "valor_total": valor_total,
              "fecha": fecha,
              "estado": estado,
-             "domiciliario": pedido_domiciliario,
-             "cliente": pedido_cliente,
-             "producto": pedido_producto
-            }
+             "domiciliario": domiciliario,
+             "cliente": cliente,
+             "producto": producto
+             }
     p = pedidos(datos)
     db.session.add(p)
     db.session.commit()
     return redirect(url_for('principal'))
+
 
 @app.route("/eliminar/<int:id>")
 @cross_origin()
@@ -70,34 +75,33 @@ def eliminar(id):
     db.session.commit()
     return redirect(url_for('principal'))
 
-@app.route("/actualizar/<int:id>/<int:cantidad>/<int:valor_total>/<fecha>/<estado>")
+@app.route("/actualizar/<int:id>/<int:cantidad>/<int:valor_total>/<fecha>/<estado>/<int:domiciliario>/<int:cliente>/<int:producto>")
 @cross_origin()
-def actualizar(id, cantidad, valor_total, fecha,estado,pedido_domiciliario,pedido_cliente,pedido_producto):
+def actualizar(id, cantidad, valor_total, fecha, estado, domiciliario, cliente, producto):
     p = pedidos.query.filter_by(id=id).first()
     p.pedido_cantidad = cantidad
     p.pedido_valor_total = valor_total
-    p.pedido_fecha = fecha,
-    p.pedido_estado = estado,
-    p.pedido_domiciliario=pedido_domiciliario,
-    p.pedido_cliente=pedido_cliente,
-    p.pedido_producto=pedido_producto
-
-  
-
-
+    p.pedido_fecha = fecha
+    p.pedido_estado = estado
+    p.pedido_domiciliario = domiciliario
+    p.pedido_cliente = cliente
+    p.pedido_producto = producto
     db.session.commit()
     return redirect(url_for('principal'))
+
 
 @app.route("/buscar/<int:id>")
 @cross_origin()
 def buscar(id):
     d = pedidos.query.filter_by(id=id).first()
     p = {"id": d.id,
-         "cantidad": d.pedido_cantidad,
-         "valor_total": d.pedido_valor_total,
-         "fecha": d.pedido_fecha,
-           "estado": d.estado,
-        }
+         "valor_total": d.valor_total,
+         "fecha": d.fecha,
+         "estado": d.estado,
+         "domiciliario": d.pedido_domiciliario,
+         "cliente": d.pedido_cliente,
+         "producto": d.pedido_producto
+         }
     return p
 
 
